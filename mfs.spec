@@ -1,4 +1,5 @@
 Summary:	MooseFS - distributed, fault tolerant file system
+Summary(pl.UTF-8):	MooseFS - rozproszony, odporny na awarie system plików
 Name:		mfs
 Version:	1.6.26
 Release:	0.3
@@ -11,46 +12,73 @@ BuildRequires:	libfuse-devel
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
 %define		mfsconfdir	%{_sysconfdir}/%{name}
+%define		_localstatedir	/var/lib
 
 %description
 MooseFS is an Open Source, easy to deploy and maintain, distributed,
 fault tolerant file system for POSIX compliant OSes.
 
+%description -l pl.UTF-8
+MooseFS to mający otwarte źródła, łatwy we wdrożeniu i utrzymywaniu,
+rozproszony i odporny na awarie system plików dla systemów
+operacyjnych zgodnych z POSIX
+
 %package master
 Summary:	MooseFS master server
+Summary(pl.UTF-8):	Serwer zarządzający MooseFS
 Group:		Daemons
 
 %description master
 MooseFS master (metadata) server together with metarestore utility.
 
+%description master -l pl.UTF-8
+Serwer zarządzający (metadanych) MooseFS wraz z narzędziem
+metarestore.
+
 %package metalogger
 Summary:	MooseFS metalogger server
+Summary(pl.UTF-8):	Serwer metaloggera MooseFS
 Group:		Daemons
 
 %description metalogger
 MooseFS metalogger (metadata replication) server.
 
+%description metalogger -l pl.UTF-8
+Serwer metaloggera (replikacji metadanych) MooseFS.
+
 %package chunkserver
 Summary:	MooseFS data server
+Summary(pl.UTF-8):	Serwer danych MooseFS
 Group:		Daemons
 
 %description chunkserver
 MooseFS data server.
 
+%description chunkserver -l pl.UTF-8
+Serwer danych MooseFS.
+
 %package client
 Summary:	MooseFS client
+Summary(pl.UTF-8):	Klient MooseFS
 Group:		Daemons
 
 %description client
 MooseFS client: mfsmount and mfstools.
 
+%description client -l pl.UTF-8
+Klient MooseFS: mfsmount oraz mfstools.
+
 %package cgi
 Summary:	MooseFS CGI Monitor
+Summary(pl.UTF-8):	Monitor CGI dla MooseFS-a
 Group:		Daemons
 Requires:	python
 
 %description cgi
 MooseFS CGI Monitor.
+
+%description cgi -l pl.UTF-8
+Monitor CGI dla MooseFS-a.
 
 %prep
 %setup -q
@@ -102,8 +130,8 @@ fi
 %attr(640,root,root) %config(noreplace) %{mfsconfdir}/mfsexports.cfg
 %attr(640,root,root) %config(noreplace) %{mfsconfdir}/mfstopology.cfg
 %attr(640,root,root) %config(noreplace) %{mfsconfdir}/mfsmaster.cfg
-%attr(750,mfs,mfs) %dir %{_var}/mfs
-%attr(640,mfs,mfs) %{_var}/mfs/metadata.mfs.empty
+%attr(750,mfs,mfs) %dir %{_localstatedir}/mfs
+%attr(640,mfs,mfs) %{_localstatedir}/mfs/metadata.mfs.empty
 
 %files metalogger
 %defattr(644,root,root,755)
@@ -112,7 +140,7 @@ fi
 %{_mandir}/man5/mfsmetalogger.cfg.5*
 %{_mandir}/man8/mfsmetalogger.8*
 %attr(640,root,root) %config(noreplace) %{mfsconfdir}/mfsmetalogger.cfg
-%attr(750,mfs,mfs) %dir %{_var}/mfs
+%attr(750,mfs,mfs) %dir %{_localstatedir}/mfs
 
 %files chunkserver
 %defattr(644,root,root,755)

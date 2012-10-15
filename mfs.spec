@@ -27,7 +27,12 @@ operacyjnych zgodnych z POSIX
 Summary:	MooseFS master server
 Summary(pl.UTF-8):	Serwer zarządzający MooseFS
 Group:		Daemons
-
+Requires(pre):	/usr/sbin/groupadd
+Requires(pre):	/usr/sbin/useradd
+Requires(postun):	/usr/sbin/groupdel
+Requires(postun):	/usr/sbin/userdel
+Provides:	group(mfs)
+Provides:	user(mfs)
 %description master
 MooseFS master (metadata) server together with metarestore utility.
 
@@ -39,6 +44,12 @@ metarestore.
 Summary:	MooseFS metalogger server
 Summary(pl.UTF-8):	Serwer metaloggera MooseFS
 Group:		Daemons
+Requires(pre):	/usr/sbin/groupadd
+Requires(pre):	/usr/sbin/useradd
+Requires(postun):	/usr/sbin/groupdel
+Requires(postun):	/usr/sbin/userdel
+Provides:	group(mfs)
+Provides:	user(mfs)
 
 %description metalogger
 MooseFS metalogger (metadata replication) server.
@@ -50,6 +61,12 @@ Serwer metaloggera (replikacji metadanych) MooseFS.
 Summary:	MooseFS data server
 Summary(pl.UTF-8):	Serwer danych MooseFS
 Group:		Daemons
+Requires(pre):	/usr/sbin/groupadd
+Requires(pre):	/usr/sbin/useradd
+Requires(postun):	/usr/sbin/groupdel
+Requires(postun):	/usr/sbin/userdel
+Provides:	group(mfs)
+Provides:	user(mfs)
 
 %description chunkserver
 MooseFS data server.
@@ -109,6 +126,26 @@ rm -rf $RPM_BUILD_ROOT
 %useradd -u 282 -d /var/mfs -s /bin/false -c "MooseFS pseudo user" -g mfs mfs
 
 %postun master
+if [ "$1" = "0" ]; then
+	%userremove mfs
+	%groupremove mfs
+fi
+
+%pre metalogger
+%groupadd -g 282 mfs
+%useradd -u 282 -d /var/mfs -s /bin/false -c "MooseFS pseudo user" -g mfs mfs
+
+%postun metalogger
+if [ "$1" = "0" ]; then
+	%userremove mfs
+	%groupremove mfs
+fi
+
+%pre chunkserver
+%groupadd -g 282 mfs
+%useradd -u 282 -d /var/mfs -s /bin/false -c "MooseFS pseudo user" -g mfs mfs
+
+%postun chunkserver
 if [ "$1" = "0" ]; then
 	%userremove mfs
 	%groupremove mfs

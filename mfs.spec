@@ -165,6 +165,7 @@ fi
 %{_mandir}/man5/mfsmaster.cfg.5*
 %{_mandir}/man8/mfsmaster.8*
 %{_mandir}/man8/mfsmetarestore.8*
+%dir %{mfsconfdir}
 %attr(640,root,root) %config(noreplace) %{mfsconfdir}/mfsexports.cfg
 %attr(640,root,root) %config(noreplace) %{mfsconfdir}/mfstopology.cfg
 %attr(640,root,root) %config(noreplace) %{mfsconfdir}/mfsmaster.cfg
@@ -177,6 +178,7 @@ fi
 %attr(755,root,root) %{_sbindir}/mfsmetalogger
 %{_mandir}/man5/mfsmetalogger.cfg.5*
 %{_mandir}/man8/mfsmetalogger.8*
+%dir %{mfsconfdir}
 %attr(640,root,root) %config(noreplace) %{mfsconfdir}/mfsmetalogger.cfg
 %attr(750,mfs,mfs) %dir %{_localstatedir}/mfs
 
@@ -187,6 +189,7 @@ fi
 %{_mandir}/man5/mfschunkserver.cfg.5*
 %{_mandir}/man5/mfshdd.cfg.5*
 %{_mandir}/man8/mfschunkserver.8*
+%dir %{mfsconfdir}
 %attr(640,root,root) %config(noreplace) %{mfsconfdir}/mfschunkserver.cfg
 %attr(640,root,root) %config(noreplace) %{mfsconfdir}/mfshdd.cfg
 %attr(750,mfs,mfs) %dir %{_localstatedir}/mfs
@@ -235,6 +238,7 @@ fi
 %{_mandir}/man7/mfs.7*
 %{_mandir}/man7/moosefs.7*
 %{_mandir}/man8/mfsmount.8*
+%dir %{mfsconfdir}
 %attr(640,root,root) %config(noreplace) %{mfsconfdir}/mfsmount.cfg
 
 %files cgi

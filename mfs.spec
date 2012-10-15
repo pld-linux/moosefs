@@ -8,7 +8,6 @@ Group:		Daemons
 Source0:	http://moosefs.com/tl_files/mfscode/%{name}-%{version}.tar.gz
 # Source0-md5:	e49294bb9f2cbfff907ffed4f6662a37
 URL:		http://www.moosefs.com/
-BuildRequires:	gcc-c++
 BuildRequires:	libfuse-devel
 BuildRequires:	pkgconfig
 BuildRequires:	zlib-devel
@@ -16,6 +15,8 @@ BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
 %define		mfsconfdir	%{_sysconfdir}/%{name}
 %define		_localstatedir	/var/lib
+
+%undefine 	__cxx
 
 %description
 MooseFS is an Open Source, easy to deploy and maintain, distributed,

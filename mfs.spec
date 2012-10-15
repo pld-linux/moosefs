@@ -123,8 +123,6 @@ fi
 %{_mandir}/man5/mfsexports.cfg.5*
 %{_mandir}/man5/mfstopology.cfg.5*
 %{_mandir}/man5/mfsmaster.cfg.5*
-%{_mandir}/man7/mfs.7*
-%{_mandir}/man7/moosefs.7*
 %{_mandir}/man8/mfsmaster.8*
 %{_mandir}/man8/mfsmetarestore.8*
 %attr(640,root,root) %config(noreplace) %{mfsconfdir}/mfsexports.cfg

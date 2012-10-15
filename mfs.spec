@@ -123,7 +123,7 @@ rm -rf $RPM_BUILD_ROOT
 
 %pre master
 %groupadd -g 282 mfs
-%useradd -u 282 -d /var/mfs -s /bin/false -c "MooseFS pseudo user" -g mfs mfs
+%useradd -u 282 -d /var/lib/mfs -s /bin/false -c "MooseFS pseudo user" -g mfs mfs
 
 %postun master
 if [ "$1" = "0" ]; then
@@ -133,7 +133,7 @@ fi
 
 %pre metalogger
 %groupadd -g 282 mfs
-%useradd -u 282 -d /var/mfs -s /bin/false -c "MooseFS pseudo user" -g mfs mfs
+%useradd -u 282 -d /var/lib/mfs -s /bin/false -c "MooseFS pseudo user" -g mfs mfs
 
 %postun metalogger
 if [ "$1" = "0" ]; then
@@ -143,7 +143,7 @@ fi
 
 %pre chunkserver
 %groupadd -g 282 mfs
-%useradd -u 282 -d /var/mfs -s /bin/false -c "MooseFS pseudo user" -g mfs mfs
+%useradd -u 282 -d /var/lib/mfs -s /bin/false -c "MooseFS pseudo user" -g mfs mfs
 
 %postun chunkserver
 if [ "$1" = "0" ]; then
@@ -186,6 +186,7 @@ fi
 %{_mandir}/man8/mfschunkserver.8*
 %attr(640,root,root) %config(noreplace) %{mfsconfdir}/mfschunkserver.cfg
 %attr(640,root,root) %config(noreplace) %{mfsconfdir}/mfshdd.cfg
+%attr(750,mfs,mfs) %dir %{_localstatedir}/mfs
 
 %files client
 %defattr(644,root,root,755)

@@ -1,3 +1,4 @@
+# TODO: PLD init scripts (take PLD templates, apply settings and start/stop invocation from "rh" scripts)
 Summary:	MooseFS - distributed, fault tolerant file system
 Summary(pl.UTF-8):	MooseFS - rozproszony, odporny na awarie system plików
 Name:		mfs
@@ -10,6 +11,7 @@ Source0:	http://moosefs.com/tl_files/mfscode/%{name}-%{version}.tar.gz
 URL:		http://www.moosefs.com/
 BuildRequires:	libfuse-devel
 BuildRequires:	pkgconfig
+BuildRequires:	python-modules
 BuildRequires:	zlib-devel
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 

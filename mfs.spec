@@ -12,6 +12,7 @@ URL:		http://www.moosefs.com/
 BuildRequires:	libfuse-devel
 BuildRequires:	pkgconfig
 BuildRequires:	python-modules
+BuildRequires:	rpm-pythonprov
 BuildRequires:	zlib-devel
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 

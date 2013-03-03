@@ -1,0 +1,4 @@
+# Customized setings for mfsmetalogger
+
+# Define nice level for mfsmetalogger
+#SERVICE_RUN_NICE_LEVEL="0"

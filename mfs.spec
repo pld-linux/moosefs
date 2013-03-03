@@ -1,13 +1,21 @@
-# TODO: PLD init scripts (take PLD templates, apply settings and start/stop invocation from "rh" scripts)
+# TODO:
+# - check init scripts
+# - cgi/cgiserv split (already done in upstream spec, wait for 1.6.27 official release)
 Summary:	MooseFS - distributed, fault tolerant file system
 Summary(pl.UTF-8):	MooseFS - rozproszony, odporny na awarie system plików
 Name:		mfs
 Version:	1.6.26
-Release:	0.4
+Release:	0.5
 License:	GPL v3
 Group:		Daemons
 Source0:	http://moosefs.com/tl_files/mfscode/%{name}-%{version}.tar.gz
 # Source0-md5:	e49294bb9f2cbfff907ffed4f6662a37
+Source1:	mfsmaster.init
+Source2:	mfsmaster.sysconfig
+Source3:	mfschunkserver.init
+Source4:	mfschunkserver.sysconfig
+Source5:	mfsmetalogger.init
+Source6:	mfsmetalogger.sysconfig
 URL:		http://www.moosefs.com/
 BuildRequires:	libfuse-devel
 BuildRequires:	pkgconfig
@@ -121,8 +129,16 @@ rm -rf $RPM_BUILD_ROOT
 %{__make} install \
 	DESTDIR=$RPM_BUILD_ROOT
 
-for i in $RPM_BUILD_ROOT/%{_sysconfdir}/%{name}/*.dist; do
-	mv $i $RPM_BUILD_ROOT/%{_sysconfdir}/%{name}/`basename $i .dist`;
+for i in $RPM_BUILD_ROOT%{_sysconfdir}/%{name}/*.dist; do
+	mv $i $RPM_BUILD_ROOT%{_sysconfdir}/%{name}/`basename $i .dist`;
+done
+
+install -d $RPM_BUILD_ROOT{/etc/rc.d/init.d,/etc/sysconfig}
+for f in %{SOURCE1} %{SOURCE3} %{SOURCE5} ; do
+	cp -p "$f" $RPM_BUILD_ROOT/etc/rc.d/init.d/$(basename $f .init)
+done
+for f in %{SOURCE2} %{SOURCE4} %{SOURCE6} ; do
+	cp -p "$f" $RPM_BUILD_ROOT/etc/sysconfig/$(basename $f .sysconfig)
 done
 
 %clean
@@ -175,6 +191,8 @@ fi
 %attr(640,root,root) %config(noreplace) %{mfsconfdir}/mfsmaster.cfg
 %attr(750,mfs,mfs) %dir %{_localstatedir}/mfs
 %attr(640,mfs,mfs) %{_localstatedir}/mfs/metadata.mfs.empty
+%attr(754,root,root) /etc/rc.d/init.d/mfsmaster
+%config(noreplace) %verify(not md5 mtime size) /etc/sysconfig/mfsmaster
 
 %files metalogger
 %defattr(644,root,root,755)
@@ -185,6 +203,8 @@ fi
 %dir %{mfsconfdir}
 %attr(640,root,root) %config(noreplace) %{mfsconfdir}/mfsmetalogger.cfg
 %attr(750,mfs,mfs) %dir %{_localstatedir}/mfs
+%attr(754,root,root) /etc/rc.d/init.d/mfsmetalogger
+%config(noreplace) %verify(not md5 mtime size) /etc/sysconfig/mfsmetalogger
 
 %files chunkserver
 %defattr(644,root,root,755)
@@ -197,6 +217,8 @@ fi
 %attr(640,root,root) %config(noreplace) %{mfsconfdir}/mfschunkserver.cfg
 %attr(640,root,root) %config(noreplace) %{mfsconfdir}/mfshdd.cfg
 %attr(750,mfs,mfs) %dir %{_localstatedir}/mfs
+%attr(754,root,root) /etc/rc.d/init.d/mfschunkserver
+%config(noreplace) %verify(not md5 mtime size) /etc/sysconfig/mfschunkserver
 
 %files client
 %defattr(644,root,root,755)

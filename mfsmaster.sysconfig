@@ -1,0 +1,4 @@
+# Customized setings for mfsmaster
+
+# Define nice level for mfsmaster
+#SERVICE_RUN_NICE_LEVEL="0"

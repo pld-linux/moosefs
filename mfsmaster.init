@@ -1,0 +1,103 @@
+#!/bin/sh
+#
+# mfsmaster		MooseFS master service
+#
+# chkconfig:		345 93 07
+#
+# description:		MooseFS master
+#
+# processname:		mfsmaster
+# config:		/etc/mfs/mfsmaster.cfg
+
+# Source function library.
+. /etc/rc.d/init.d/functions
+
+# Source networking configuration.
+. /etc/sysconfig/network
+
+# Check that networking is up.
+if is_yes "${NETWORKING}"; then
+	if [ ! -f /var/lock/subsys/network -a "$1" != stop -a "$1" != status ]; then
+		msg_network_down "mfsmaster"
+		exit 1
+	fi
+else
+	exit 0
+fi
+
+# Source initialization configuration.
+[ -f /etc/sysconfig/mfsmaster ] && . /etc/sysconfig/mfsmaster
+
+[ -r /etc/mfs/mfsmaster.cfg ] || exit 6
+[ -r /etc/mfs/mfsexports.cfg ] || exit 6
+
+start () {
+	if [ -f /var/lock/subsys/mfsmaster ]; then
+		msg_already_running "mfsmaster"
+		return
+	fi
+	msg_starting "mfsmaster"
+	daemon /usr/sbin/mfsmaster start >/dev/null 2>&1
+	RETVAL=$?
+	[ $RETVAL -eq 0 ] && touch /var/lock/subsys/mfsmaster
+}
+stop () {
+	if [ ! -f /var/lock/subsys/mfsmaster ]; then
+		msg_not_running "mfsmaster"
+		return
+	fi
+	msg_stopping "mfsmaster"
+	/usr/sbin/mfsmaster stop >/dev/null 2>&1 && ok || killproc mfsmaster >/dev/null 2>&1
+	rm -f /var/lock/subsys/mfsmaster
+}
+
+reload() {
+	if [ ! -f /var/lock/subsys/mfsmaster ]; then
+		msg_not_running "mfsmaster"
+		RETVAL=7
+		return
+	fi
+	msg_reloading "mfsmaster"
+	/usr/bin/mfsmaster reload >/dev/null 2>&1 && ok || fail
+	RETVAL=$?
+}
+
+condrestart() {
+	if [ ! -f /var/lock/subsys/mfsmaster ]; then
+		msg_not_running "mfsmaster"
+		RETVAL=$1
+		return
+	fi
+	stop
+	start
+}
+
+RETVAL=0
+case "$1" in
+  start)
+	start
+	;;
+  stop)
+	stop
+	;;
+  restart)
+	stop
+	start
+	;;
+  try-restart)
+	condrestart 0
+	;;
+  reload|force-reload)
+	reload
+	;;
+  status)
+	status mfsmaster
+	/usr/sbin/mfsmaster test
+	RETVAL=$?
+	;;
+  *)
+	mfs_usage "$0 {start|stop|restart|try-restart|reload|force-reload|status}"
+	exit 3
+esac
+
+exit $RETVAL

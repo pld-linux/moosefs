@@ -1,0 +1,4 @@
+# Customized setings for mfschunkserver
+
+# Define nice level for mfschunkserver
+#SERVICE_RUN_NICE_LEVEL="-5"

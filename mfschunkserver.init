@@ -1,0 +1,103 @@
+#!/bin/sh
+#
+# mfschunkserver	MooseFS chunkserver service
+#
+# chkconfig:		345 92 08
+#
+# description:		MooseFS chunkserver
+#
+# processname:		mfschunkserver
+# config:		/etc/mfs/mfschunkserver.cfg
+
+# Source function library.
+. /etc/rc.d/init.d/functions
+
+# Source networking configuration.
+. /etc/sysconfig/network
+
+# Check that networking is up.
+if is_yes "${NETWORKING}"; then
+	if [ ! -f /var/lock/subsys/network -a "$1" != stop -a "$1" != status ]; then
+		msg_network_down "mfschunkserver"
+		exit 1
+	fi
+else
+	exit 0
+fi
+
+# Source initialization configuration.
+[ -f /etc/sysconfig/mfschunkserver ] && . /etc/sysconfig/mfschunkserver
+
+[ -r /etc/mfs/mfschunkserver.cfg ] || exit 6
+[ -r /etc/mfs/mfshdd.cfg ] || exit 6
+
+start () {
+	if [ -f /var/lock/subsys/mfschunkserver ]; then
+		msg_already_running "mfschunkserver"
+		return
+	fi
+	msg_starting "mfschunkserver"
+	daemon /usr/sbin/mfschunkserver start >/dev/null 2>&1
+	RETVAL=$?
+	[ $RETVAL -eq 0 ] && touch /var/lock/subsys/mfschunkserver
+}
+stop () {
+	if [ ! -f /var/lock/subsys/mfschunkserver ]; then
+		msg_not_running "mfschunkserver"
+		return
+	fi
+	msg_stopping "mfschunkserver"
+	/usr/sbin/mfschunkserver stop >/dev/null 2>&1 && ok || killproc mfschunkserver >/dev/null 2>&1
+	rm -f /var/lock/subsys/mfschunkserver
+}
+
+reload() {
+	if [ ! -f /var/lock/subsys/mfschunkserver ]; then
+		msg_not_running "mfschunkserver"
+		RETVAL=7
+		return
+	fi
+	msg_reloading "mfschunkserver"
+	/usr/bin/mfschunkserver reload >/dev/null 2>&1 && ok || fail
+	RETVAL=$?
+}
+
+condrestart() {
+	if [ ! -f /var/lock/subsys/mfschunkserver ]; then
+		msg_not_running "mfschunkserver"
+		RETVAL=$1
+		return
+	fi
+	stop
+	start
+}
+
+RETVAL=0
+case "$1" in
+  start)
+	start
+	;;
+  stop)
+	stop
+	;;
+  restart)
+	stop
+	start
+	;;
+  try-restart)
+	condrestart 0
+	;;
+  reload|force-reload)
+	reload
+	;;
+  status)
+	status mfschunkserver
+	/usr/sbin/mfschunkserver test
+	RETVAL=$?
+	;;
+  *)
+	mfs_usage "$0 {start|stop|restart|try-restart|reload|force-reload|status}"
+	exit 3
+esac
+
+exit $RETVAL

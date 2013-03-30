@@ -1,21 +1,22 @@
 # TODO:
 # - check init scripts
-# - cgi/cgiserv split (already done in upstream spec, wait for 1.6.27 official release)
 Summary:	MooseFS - distributed, fault tolerant file system
 Summary(pl.UTF-8):	MooseFS - rozproszony, odporny na awarie system plików
 Name:		mfs
-Version:	1.6.26
-Release:	0.5
+Version:	1.6.27
+Release:	0.1
 License:	GPL v3
 Group:		Daemons
-Source0:	http://moosefs.com/tl_files/mfscode/%{name}-%{version}.tar.gz
-# Source0-md5:	e49294bb9f2cbfff907ffed4f6662a37
+Source0:	http://moosefs.com/tl_files/mfscode/%{name}-%{version}-1.tar.gz
+# Source0-md5:	7b3879b48b476e8604986991cb2fb56b
 Source1:	mfsmaster.init
 Source2:	mfsmaster.sysconfig
 Source3:	mfschunkserver.init
 Source4:	mfschunkserver.sysconfig
 Source5:	mfsmetalogger.init
 Source6:	mfsmetalogger.sysconfig
+Source7:	mfscgiserv.init
+Source8:	mfscgiserv.sysconfig
 URL:		http://www.moosefs.com/
 BuildRequires:	libfuse-devel
 BuildRequires:	pkgconfig
@@ -48,6 +49,7 @@ Requires(postun):	/usr/sbin/groupdel
 Requires(postun):	/usr/sbin/userdel
 Provides:	group(mfs)
 Provides:	user(mfs)
+
 %description master
 MooseFS master (metadata) server together with metarestore utility.
 
@@ -104,7 +106,7 @@ Klient MooseFS: mfsmount oraz mfstools.
 Summary:	MooseFS CGI Monitor
 Summary(pl.UTF-8):	Monitor CGI dla MooseFS-a
 Group:		Daemons
-Requires:	python
+Requires:	python-modules
 
 %description cgi
 MooseFS CGI Monitor.
@@ -112,12 +114,25 @@ MooseFS CGI Monitor.
 %description cgi -l pl.UTF-8
 Monitor CGI dla MooseFS-a.
 
+%package cgiserv
+Summary:	Simple CGI-capable HTTP server to run MooseFS CGI Monitor
+Summary(pl.UTF-8):	Prosty serwer HTTP z obsługą CGI do uruchamiania Monitora CGI dla MooseFS-a
+Group:		Daemons
+Requires:	python
+Requires:	python-modules
+
+%description cgiserv
+Simple CGI-capable HTTP server to run MooseFS CGI Monitor.
+
+%description cgiserv -l pl.UTF-8
+Prosty serwer HTTP z obsługą CGI do uruchamiania Monitora CGI dla
+MooseFS-a.
+
 %prep
 %setup -q
 
 %build
 %configure \
-	--sysconfdir=%{mfsconfdir} \
 	--with-default-user=mfs \
 	--with-default-group=mfs
 
@@ -134,12 +149,14 @@ for i in $RPM_BUILD_ROOT%{_sysconfdir}/%{name}/*.dist; do
 done
 
 install -d $RPM_BUILD_ROOT{/etc/rc.d/init.d,/etc/sysconfig}
-for f in %{SOURCE1} %{SOURCE3} %{SOURCE5} ; do
+for f in %{SOURCE1} %{SOURCE3} %{SOURCE5} %{SOURCE7} ; do
 	cp -p "$f" $RPM_BUILD_ROOT/etc/rc.d/init.d/$(basename $f .init)
 done
-for f in %{SOURCE2} %{SOURCE4} %{SOURCE6} ; do
+for f in %{SOURCE2} %{SOURCE4} %{SOURCE6} %{SOURCE8} ; do
 	cp -p "$f" $RPM_BUILD_ROOT/etc/sysconfig/$(basename $f .sysconfig)
 done
+
+%{__sed} -i -e '1s,/usr/bin/env python,/usr/bin/python,' $RPM_BUILD_ROOT%{_datadir}/mfscgi/*.cgi
 
 %clean
 rm -rf $RPM_BUILD_ROOT
@@ -270,6 +287,18 @@ fi
 %files cgi
 %defattr(644,root,root,755)
 %doc NEWS README UPGRADE
+%dir %{_datadir}/mfscgi
+%attr(755,root,root) %{_datadir}/mfscgi/chart.cgi
+%attr(755,root,root) %{_datadir}/mfscgi/mfs.cgi
+%{_datadir}/mfscgi/err.gif
+%{_datadir}/mfscgi/favicon.ico
+%{_datadir}/mfscgi/index.html
+%{_datadir}/mfscgi/logomini.png
+%{_datadir}/mfscgi/mfs.css
+
+%files cgiserv
+%defattr(644,root,root,755)
 %attr(755,root,root) %{_sbindir}/mfscgiserv
 %{_mandir}/man8/mfscgiserv.8*
-%{_datadir}/mfscgi
+%attr(754,root,root) /etc/rc.d/init.d/mfscgiserv
+%config(noreplace) %verify(not md5 mtime size) /etc/sysconfig/mfscgiserv

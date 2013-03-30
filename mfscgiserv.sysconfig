@@ -1,0 +1,7 @@
+# Customized setings for mfscgiserv
+
+# User to run mfscgiserv as
+#MFSCGISERV_USER=nobody
+
+# Define nice level for mfscgiserv
+#SERVICE_RUN_NICE_LEVEL="0"

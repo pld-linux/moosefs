@@ -1,0 +1,90 @@
+#!/bin/sh
+#
+# mfscgiserv		MooseFS CGI monitor service
+#
+# chkconfig:		345 93 07
+#
+# description:		MooseFS CGI server
+#
+# processname:		mfscgiserv
+
+# Source function library.
+. /etc/rc.d/init.d/functions
+
+# Source networking configuration.
+. /etc/sysconfig/network
+
+# Check that networking is up.
+if is_yes "${NETWORKING}"; then
+	if [ ! -f /var/lock/subsys/network -a "$1" != stop -a "$1" != status ]; then
+		msg_network_down "mfscgiserv"
+		exit 1
+	fi
+else
+	exit 0
+fi
+
+MFSCGISERV_USER=nobody
+
+# Source initialization configuration.
+[ -f /etc/sysconfig/mfscgiserv ] && . /etc/sysconfig/mfscgiserv
+
+start () {
+	if [ -f /var/lock/subsys/mfscgiserv ]; then
+		msg_already_running "mfscgiserv"
+		return
+	fi
+	msg_starting "mfscgiserv"
+	daemon --user $MFSCGISERV_USER /usr/sbin/mfscgiserv start >/dev/null 2>&1
+	RETVAL=$?
+	[ $RETVAL -eq 0 ] && touch /var/lock/subsys/mfscgiserv
+}
+stop () {
+	if [ ! -f /var/lock/subsys/mfscgiserv ]; then
+		msg_not_running "mfscgiserv"
+		return
+	fi
+	msg_stopping "mfscgiserv"
+	/usr/sbin/mfscgiserv stop >/dev/null 2>&1 && ok || killproc mfscgiserv >/dev/null 2>&1
+	rm -f /var/lock/subsys/mfscgiserv
+}
+
+condrestart() {
+	if [ ! -f /var/lock/subsys/mfscgiserv ]; then
+		msg_not_running "mfscgiserv"
+		RETVAL=$1
+		return
+	fi
+	stop
+	start
+}
+
+RETVAL=0
+case "$1" in
+  start)
+	start
+	;;
+  stop)
+	stop
+	;;
+  restart)
+	stop
+	start
+	;;
+  try-restart)
+	condrestart 0
+	;;
+  force-reload)
+	condrestart 7
+	;;
+  status)
+	status mfscgiserv
+	/usr/sbin/mfscgiserv test
+	RETVAL=$?
+	;;
+  *)
+	mfs_usage "$0 {start|stop|restart|try-restart|force-reload|status}"
+	exit 3
+esac
+
+exit $RETVAL

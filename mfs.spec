@@ -3,12 +3,14 @@
 Summary:	MooseFS - distributed, fault tolerant file system
 Summary(pl.UTF-8):	MooseFS - rozproszony, odporny na awarie system plików
 Name:		mfs
-Version:	1.6.27
+%define	ver	1.6.27
+%define	subver	5
+Version:	%{ver}.%{subver}
 Release:	0.1
 License:	GPL v3
 Group:		Daemons
-Source0:	http://moosefs.com/tl_files/mfscode/%{name}-%{version}-1.tar.gz
-# Source0-md5:	7b3879b48b476e8604986991cb2fb56b
+Source0:	http://www.moosefs.org/tl_files/mfscode/%{name}-%{ver}-%{subver}.tar.gz
+# Source0-md5:	9eb1a2bde24b393aec3a1e4ced9fdd0f
 Source1:	mfsmaster.init
 Source2:	mfsmaster.sysconfig
 Source3:	mfschunkserver.init
@@ -17,7 +19,7 @@ Source5:	mfsmetalogger.init
 Source6:	mfsmetalogger.sysconfig
 Source7:	mfscgiserv.init
 Source8:	mfscgiserv.sysconfig
-URL:		http://www.moosefs.com/
+URL:		http://www.moosefs.org/
 BuildRequires:	libfuse-devel
 BuildRequires:	pkgconfig
 BuildRequires:	python-modules
@@ -129,7 +131,7 @@ Prosty serwer HTTP z obsługą CGI do uruchamiania Monitora CGI dla
 MooseFS-a.
 
 %prep
-%setup -q
+%setup -q -n %{name}-%{ver}
 
 %build
 %configure \

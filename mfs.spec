@@ -146,8 +146,8 @@ rm -rf $RPM_BUILD_ROOT
 %{__make} install \
 	DESTDIR=$RPM_BUILD_ROOT
 
-for i in $RPM_BUILD_ROOT%{_sysconfdir}/%{name}/*.dist; do
-	mv $i $RPM_BUILD_ROOT%{_sysconfdir}/%{name}/`basename $i .dist`;
+for i in $RPM_BUILD_ROOT%{mfsconfdir}/*.dist; do
+	%{__mv} $i $RPM_BUILD_ROOT%{mfsconfdir}/`basename $i .dist`;
 done
 
 install -d $RPM_BUILD_ROOT{/etc/rc.d/init.d,/etc/sysconfig}
